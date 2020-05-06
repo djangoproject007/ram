@@ -1,0 +1,288 @@
+{% extends 'base/base.html' %}
+
+{% load static custom_tags %}
+
+{% block content %}
+    <style>
+
+.post
+{
+    background-color: #FFF;
+    overflow: hidden;
+    box-shadow: 0 0 1px #CCC;
+    padding: 1px;
+}
+.post .post-title b
+{
+    background-color: rgba(51, 51, 51, 0.58);
+    display: inline-block;
+    color: #FFF;
+    padding: 10px 15px;
+    margin-top: 5px;
+}
+
+</style>
+
+<div class="profile" style="background:#ffffff;">
+  <div class="profile__head">
+    <div class="row">
+      <div class="col-xs-4 left">
+        {% if profile.avatar %}
+          <img class="picture-circle" src="{{ profile.avatar.url }}">
+        {% else %}
+          <img class="picture-circle" src="{% static 'images/profile_placeholder.jpg' %}">
+        {% endif %}
+      </div>
+      <div class="col-xs-8 right">
+        <div class="name-buttons">
+          <h1 class="username">
+              <strong style="text-transform: capitalize;"> {{ profile.user.first_name }} {{ profile.user.last_name }}
+              </strong>
+              (@ {{ profile.user.username }})
+          </h1>
+          {% if request.user == user %}
+            <a class="edit-desktop" href="{% url 'userprofile:edit_info' %}">
+              <button class="edit-profile"><strong>EDIT-PROFILE</strong></button>
+            </a>
+            <div class="options-bubbles" type="button" data-toggle="modal" data-target="#logoutModal">
+              <p class="bubble"></p>
+              <p class="bubble"></p>
+              <p class="bubble"></p>
+            </div>
+          {% elif request.user.is_authenticated %}
+          <div class="follow-toggle__container">
+            {% is_following request.user.userprofiledata profile as following %}
+            <button class="btn btn-primary {% if not following %}follow-user{% else %}unfollow-user{% endif %}" id="{{ profile.pk }}">
+              {% if not following %}
+                Follow
+              {% else %}
+                Following
+              {% endif %}
+            </button>
+          </div>
+          {% endif %}
+          <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <ul>
+                  <li><a type="button" class="btn" href="">Change Password</a></li>
+                  <li><a type="button" class="btn" href="{% url 'basic:signout' %}">Logout</a></li>
+                  <li><a type="button" class="btn" data-dismiss="modal">Cancel</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% if request.user == user %}
+          <a class="edit-mobile" href="{% url 'userprofile:edit_info' %}">
+            <button class="edit-profile">Edit Profile</button>
+          </a>
+        {% endif %}
+        <div class="desktop-block">
+          <ul class="stats">
+              <li class="stats__count"><span>{{ user.post_set.count }}</span> Posts</li>
+              <a href="{% url 'userprofile:followers' username=profile.user.username %}"><li class="stats__count"><span>{{ profile.get_number_of_followers }}</span> Followers</li></a>
+              <a href="{% url 'userprofile:following' username=profile.user.username %}"><li class="stats__count"><span>{{ profile.get_number_of_following }}</span> Following</li></a>
+          </ul>
+          <div class="description">
+            <p>{% if profile.status %}{{ profile.status }}{% endif %}</p>
+              <h5 class="pull-right" style="font-size:2em; padding-right:0.2em;">
+                {% if profile.instagram %}
+                    <a class="fa fa-instagram" href="{{ profile.instagram }}" target="_blank" style="padding-right:0.3em;"></a>
+                    {% endif %}
+                {% if profile.github %}
+                    <a class="fa fa-github" href="{{ profile.github }}" target="_blank" style="padding-right:0.3em;"></a>
+                    {% endif %}
+                {% if profile.fb %}
+                    <a class="fa fa-facebook-square" href="{{ profile.fb }}" target="_blank" style="padding-right:0.3em;"></a>
+                {% endif %}
+                {% if profile.linkedin %}
+                    <a class="fa fa-linkedin-square" href="{{ profile.linkedin }}" target="_blank" style="padding-right:0.3em;">
+                    </a>
+                {% endif %}
+            </h5>
+          </div>
+        </div>
+      </div>
+      <div class="mobile-block">
+        <div class="description">
+          <p>{% if profile.status %}{{ profile.status }}{% endif %}</p>
+        </div>
+        <ul class="stats">
+            <div class="col-xs-4"><li class="stats__count"><span>{{ user.post_set.count }}</span><br> posts</li></div>
+            <div class="col-xs-4"><a href="{% url 'userprofile:followers' username=profile.user.username %}"><li class="stats__count"><span>{{ profile.get_number_of_followers }}</span><br> followers</li></a></div>
+            <div class="col-xs-4"><a href="{% url 'userprofile:following' username=profile.user.username %}"><li class="stats__count"><span>{{ profile.get_number_of_following }}</span><br> following</li></a></div>
+        </ul>
+            <h5 class="pull-right" style="font-size:2em; padding-right:0.2em;">
+                {% if profile.instagram %}
+                    <a class="fa fa-instagram" href="{{ profile.instagram }}" target="_blank" style="padding-right:0.3em;"></a>
+                    {% endif %}
+                {% if profile.github %}
+                    <a class="fa fa-github" href="{{ profile.github }}" target="_blank" style="padding-right:0.3em;"></a>
+                    {% endif %}
+                {% if profile.fb %}
+                    <a class="fa fa-facebook-square" href="{{ profile.fb }}" target="_blank" style="padding-right:0.3em;"></a>
+                {% endif %}
+                {% if profile.linkedin %}
+                    <a class="fa fa-linkedin-square" href="{{ profile.linkedin }}" target="_blank" style="padding-right:0.3em;">
+                    </a>
+                {% endif %}
+            </h5>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+    <div class="profile__body">
+    <div class="row">
+      {% for post in user.post_set.all reversed %}
+        <div class="card view-update {{ post.pk }}">
+        <div class="post">
+        <div class="desktop-block">
+        <div class="col-xs-12" style="padding-bottom: 20px;">
+        <h5 style="font-size: 2em; padding-bottom: 15px;">
+            <a href="{% url "posts:see_post" id=post.id %}"> {{ post.title }} <p class="pull-right" style="color: #999; font-size: 0.5em; padding-top: 15px;"> {{ post.time_created | timesince }}</p>
+            </a>
+        </h5>
+        {% if post.image %}
+        <div class="col-xs-7">
+            <span class="image fit">
+                <a href="{% url "posts:see_post" id=post.id %}">
+                <img class="img-rounded" data-src="..." alt="Card image cap" src="{{ post.image.url }}" width=100% height="100%">
+                </a>
+            </span>
+        </div>
+	<p class="col-xs-5" style="color: #464744; font-size: 1.2em;">{{ post.content }}</p>
+
+	{% else %}
+        
+            <p class="col-xs-12" style="color: #464744; font-size: 1.2em;">{{ post.content }}</p>
+	{% endif %}        
+        </div>
+        <h3 class="pull-right" style="padding: 15px 15px;">
+        Likes:
+        <a href="{% url 'likes:likes' pk=post.pk %}" class="likes">
+             {{ post.get_number_of_likes }}
+        </a>
+        </h3>
+         <div class="card__panel-body">
+            <ul class="comment-list">
+            {% for comment in post.comment_set.all %}
+                <li class="comment-list__comment">
+                  <a href="{% url 'userprofile:see_user' user_username=comment.user.username %}" class="user" style="padding-right: 1em;">
+                    @{{ comment.user.username }}
+                  </a>
+                  <span class="comment">{{ comment.comment }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+            {% if request.user.is_authenticated %}
+              <section class="input-row">
+                <i class="fa {% has_user_liked_post post request.user %} submit-like" aria-hidden="true"></i>
+                <div class="comment-input-wrapper">
+                  <input class="add-comment" type="text" placeholder="Add a comment...">
+                </div>
+                <div class="hidden-data {{ post.pk }}" style="display: none;">
+                  <span class="post-pk">{{ post.pk }}</span>
+                </div>
+              </section>
+            {% endif %}
+            <br>
+            {% if post.user == request.user %}
+                <p class="actions pull-right">
+                    <!-- Button trigger modal -->
+                    <a href="{% url "posts:edit_post" id=post.id %}" class="button scrolly">edit </a>
+                    |<a href="" class="button scrolly" data-toggle="modal" data-target="#myModal"> delete</a>
+                </p>
+            {% endif %}
+        </div>
+        </div>
+        <div class="mobile-block">
+                <h5 style="font-size: 2em;">
+                            <a href="{% url "posts:see_post" id=post.id %}">
+                                <p class="pull-right" style="color: #999; font-size: 0.5em; padding-top: 15px;"> {{ post.time_created | timesince }}</p>
+                            </a>
+                </h5>
+                {% if post.image %}
+                    <img data-src="..." alt="Card image cap" src="{{ post.image.url }}" width=100% height="85%">
+                {% endif %}
+                    <span class="post-title"><b>{{ post.title }}</b>
+                    </span>
+                    <br>
+                    <h3 class="pull-right" style="padding: 15px 15px;">
+                    Likes:
+                    <a href="{% url 'likes:likes' pk=post.pk %}" class="likes">
+                         {{ post.get_number_of_likes }}
+                    </a>
+                    </h3>
+                    <br>
+                    <div class="content"  style="padding: 15px;">
+                        {% if post.content|length > 300 %}
+                            <p style="color: #3a3e47;">{{ post.content|truncatechars:300 }}</p>
+                            <div>
+                                <a href="{% url "posts:see_post" id=post.id %}" class="btn btn-primary btn-sm">Read more</a>
+                            </div>
+                        {% else %}
+                            <p style="color: #3a3e47;">{{ post.content }}</p>
+                        {% endif %}
+                    </div>
+            <div class="card__panel-body">
+                <ul class="comment-list">
+                  {% for comment in post.comment_set.all %}
+                       <li class="comment-list__comment">
+                          <a href="{% url 'userprofile:see_user' user_username=comment.user.username %}" class="user" style="padding-right: 1em;">
+                            @{{ comment.user.username }}
+                          </a>
+                          <span class="comment">{{ comment.comment }}</span>
+                        </li>
+                  {% endfor %}
+                </ul>
+                {% if request.user.is_authenticated %}
+                  <section class="input-row">
+                    <i class="fa {% has_user_liked_post post request.user %} submit-like" aria-hidden="true"></i>
+                    <div class="comment-input-wrapper">
+                      <input class="add-comment" type="text" placeholder="Add a comment...">
+                    </div>
+                    <div class="hidden-data {{ post.pk }}" style="display: none;">
+                      <span class="post-pk">{{ post.pk }}</span>
+                    </div>
+                  </section>
+                {% endif %}
+                <br>
+                {% if post.user == request.user %}
+                    <p class="actions pull-right">
+                        <!-- Button trigger modal -->
+                        <a href="{% url "posts:edit_post" id=post.id %}" class="button scrolly">edit </a>
+                        |<a href="" class="button scrolly" data-toggle="modal" data-target="#myModal"> delete</a>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+      </div>
+      </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Delete</h4>
+              </div>
+              <div class="modal-body">
+                Are you sure to delete the post?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <a href="{% url "posts:delete_post" id=post.id %}" class="btn btn-success"><strong>Yes</strong></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+{% endblock %}

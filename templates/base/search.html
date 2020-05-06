@@ -1,0 +1,121 @@
+{% extends "base/base.html" %}
+
+{% load static custom_tags %}
+
+{% block title %}
+    <title>Search</title>
+{% endblock %}
+
+{% block content %}
+<style>
+.post-title b
+{
+    background-color: rgba(51, 51, 51, 0.58);
+    display: inline-block;
+    color: #FFF;
+    padding: 10px 15px;
+    margin-top: 5px;
+}
+
+</style>
+
+    <div style="margin: auto; max-width: 45em;">
+            {% if not people and not search_data %}
+                <center><h3>Nothing relevant found.</h3></center>
+            {% endif %}
+            {% if people %}
+                <h3>USERS:</h3>
+            {% endif %}
+            {% for profile in people %}
+            <div class="follow__card" id="{{ profile.pk }}">
+              {% if profile.userprofiledata.avatar %}
+                <img class="picture-circle--small" src="{{ profile.userprofiledata.avatar.url }}">
+              {% else %}
+                <img class="picture-circle--small" src="{% static 'images/profile_placeholder.jpg' %}">
+              {% endif %}
+              <a href="{% url 'userprofile:see_user' user_username=profile %}">{{ profile }}</a>
+
+              {% if request.user.is_authenticated and profile.userprofiledata != request.user.userprofiledata %}
+                <div class="follow-toggle__container">
+                  {% is_following request.user.userprofiledata profile.userprofiledata as following %}
+                  <button class="btn btn-primary {% if not following %}follow-user{% else %}unfollow-user{% endif %}">
+                    {% if not following %}
+                      Follow
+                    {% else %}
+                      Following
+                    {% endif %}
+                  </button>
+                </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+            {% if search_data %}
+                <h3>POSTS:</h3>
+            {% endif %}
+            <div class="cards-listing">
+            {% for post in search_data %}
+                <div class="row">
+                    <div class="card view-update {{ post.pk }}">
+                        <div class="card__panel-head">
+                            <div class="poster__info">
+                                <a href="{% url 'userprofile:see_user' post.user.username %}" class="poster__name">
+                                  {% if post.user.userprofiledata.avatar %}
+                                    <img class="poster__profilepic" src="{{ post.user.userprofiledata.avatar.url }}">
+                                  {% else %}
+                                    <img class="poster__profilepic" src="{% static 'images/profile_placeholder.jpg' %}">
+                                  {% endif %}
+                                  {{ post.user.username }}
+                                </a>
+                                <span class="poster__timestamp">
+                                    {{ post.time_created|timesince }}
+                                </span>
+                            </div>
+                        </div>
+                        {% if post.image %}
+                            <img data-src="..." alt="Card image cap" src="{{ post.image.url }}" width=100% height="85%">
+                        {% endif %}
+
+                        <span class="post-title"><b>{{ post.title }}</b>
+                            <h4 class="pull-right likes" style="padding: 15px 15px;">
+                                <a href="{% url 'likes:likes' pk=post.pk %}">Likes: {{ post.get_number_of_likes }}</a>
+                            </h4>
+                            <br>
+                        </span>
+
+                        <div class="content"  style="padding: 15px;">
+                                                    {{ post.content.count }}
+                            <h3 style="color: #3a3e47;">{{ post.content|truncatechars:300 }}</h3>
+                            <div>
+                                <a href="{% url "posts:see_post" id=post.id %}" class="btn btn-primary btn-sm">Read more</a>
+                            </div>
+                        </div>
+                        <div class="card__panel-body">
+                            <ul class="comment-list">
+                              {% for comment in post.comment_set.all %}
+                                <li class="comment-list__comment">
+                                  <a href="{% url 'userprofile:see_user' user_username=comment.user.username %}" class="user">
+                                    {{ comment.user.username }}
+                                  </a>
+                                  <span class="comment">{{ comment.comment }}</span>
+                                </li>
+                              {% endfor %}
+                            </ul>
+                            {% if request.user.is_authenticated %}
+                              <section class="input-row">
+                                <i class="fa {% has_user_liked_post post request.user %} submit-like" aria-hidden="true"></i>
+                                <div class="comment-input-wrapper">
+                                  <input class="add-comment" type="text" placeholder="Add a comment...">
+                                </div>
+                                <div class="hidden-data {{ post.pk }}" style="display: none;">
+                                  <span class="post-pk">{{ post.pk }}</span>
+                                </div>
+                              </section>
+                            {% endif %}
+                            <br>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base/base.html' %}
+
+{% load static custom_tags %}
+
+{% block content %}
+<div class="follow__wrapper row">
+  <div class="follow__heading">
+    HUSKY DIRECTORY
+  </div>
+  {% for profile in profiles %}
+    <div class="follow__card" id="{{ profile.pk }}">
+      {% if profile.avatar %}
+        <img class="picture-circle--small" src="{{ profile.avatar.url }}">
+      {% else %}
+        <img class="picture-circle--small" src="{% static 'images/profile_placeholder.jpg' %}">
+      {% endif %}
+      <a href="{% url 'userprofile:see_user' user_username=profile.user.username %}">{{ profile.user.username }}</a>
+
+      {% if request.user.is_authenticated and profile.user.username != request.user.username %}
+        <div class="follow-toggle__container">
+          {% is_following request.user.userprofiledata profile as following %}
+          <button class="btn btn-primary {% if not following %}follow-user{% else %}unfollow-user{% endif %}">
+            {% if not following %}
+              Follow
+            {% else %}
+              Following
+            {% endif %}
+          </button>
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

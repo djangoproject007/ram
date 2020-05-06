@@ -1,0 +1,184 @@
+{% extends 'base/base.html' %}
+
+{% load static %}
+
+{% block content %}
+<style>
+
+    .chat-message {
+      padding: 60px 20px 0 0;
+    }
+
+    .chat {
+        list-style: none;
+        margin: 0;
+        padding-left : 25px;
+    }
+
+    .chat li img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50em;
+      -moz-border-radius: 50em;
+      -webkit-border-radius: 50em;
+    }
+
+    .chat-body {
+      padding-bottom: 20px;
+    }
+
+    .chat li.left .chat-body {
+      margin-left: 70px;
+      background-color: #fff;
+    }
+
+    .chat li .chat-body {
+      position: relative;
+      font-size: 11px;
+      padding: 10px;
+      border: 1px solid #f1f5fc;
+      box-shadow: 0 1px 1px rgba(0,0,0,.05);
+      -moz-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+      -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    }
+
+    .chat li .chat-body .header {
+      padding-bottom: 5px;
+      border-bottom: 1px solid #f1f5fc;
+    }
+
+    .chat li .chat-body p {
+      margin: 0;
+    }
+
+    .chat li.left .chat-body:before {
+      position: absolute;
+      top: 10px;
+      left: -8px;
+      display: inline-block;
+      background: #fff;
+      width: 16px;
+      height: 16px;
+      border-top: 1px solid #f1f5fc;
+      border-left: 1px solid #f1f5fc;
+      content: '';
+      transform: rotate(-45deg);
+      -webkit-transform: rotate(-45deg);
+      -moz-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+      -o-transform: rotate(-45deg);
+    }
+
+    .chat li.right .chat-body:before {
+      position: absolute;
+      top: 10px;
+      right: -8px;
+      display: inline-block;
+      background: #fff;
+      width: 16px;
+      height: 16px;
+      border-top: 1px solid #f1f5fc;
+      border-right: 1px solid #f1f5fc;
+      content: '';
+      transform: rotate(45deg);
+      -webkit-transform: rotate(45deg);
+      -moz-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      -o-transform: rotate(45deg);
+    }
+
+    .chat li {
+      margin: 15px 0;
+    }
+
+    .chat li.right .chat-body {
+      margin-right: 70px;
+      background-color: #fff;
+    }
+
+    .primary-font {
+      color: #3c8dbc;
+    }
+
+</style>
+  <div class="container bootstrap snippet cards-listing" style="background: #f9f9f9;">
+    <div class="row">
+    <div class="chat-message">
+    <ul class="chat" id="messages">
+        {% for message in messages %}
+            {% if request.user != message.sender %}
+            <li class="left clearfix">
+                <span class="chat-img pull-left">
+                     {% if message.sender.userprofiledata.avatar %}
+                        <a href="{% url 'userprofile:see_user' message.sender.username %}">
+                            <img src="{{ message.sender.userprofiledata.avatar.url }}" width="45px" height="45px">
+                        </a>
+                     {% else %}
+                         <a href="{% url 'userprofile:see_user' message.sender.username %}">
+                            <img src="{% static 'images/profile_placeholder.jpg' %}" width="45px" height="45px">
+                         </a>
+                     {% endif %}
+                </span>
+                <div class="chat-body clearfix">
+                    <div class="header">
+                         <a href="{% url 'userprofile:see_user' message.sender.username %}">
+                            <strong class="primary-font">{{ message.sender.username }}</strong>
+                         </a>
+                        <small class="pull-right text-muted"><i class="fa fa-clock-o"></i> {{ message.timestamp|timesince }} ago..</small>
+                    </div>
+                    <p>
+                        {{ message.text }}
+                    </p>
+                </div>
+            </li>
+            {% else %}
+            <li class="right clearfix">
+                <span class="chat-img pull-right">
+                     {% if message.sender.userprofiledata.avatar %}
+                        <a href="{% url 'userprofile:see_user' message.sender.username %}">
+                            <img src="{{ message.sender.userprofiledata.avatar.url }}" width="45px" height="45px">
+                        </a>
+                     {% else %}
+                         <a href="{% url 'userprofile:see_user' message.sender.username %}">
+                            <img src="{% static 'images/profile_placeholder.jpg' %}" width="45px" height="45px">
+                         </a>
+                     {% endif %}
+                </span>
+                <div class="chat-body clearfix">
+                    <div class="header">
+                        <a href="{% url 'userprofile:see_user' message.sender.username %}">
+                            <strong class="primary-font">{{ message.sender.username }}</strong>
+                        </a>
+                        <small class="pull-right text-muted"><i class="fa fa-clock-o"></i> {{ message.timestamp|timesince }} ago..</small>
+                    </div>
+                    <p>
+                        {{ message.text }}
+                    </p>
+                </div>
+            </li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    </div>
+      <form id="chatForm">
+        <div id="chatData" style="display: none">
+          <span id="session-key">{{ request.session.session_key }}</span>
+          <span id="user">{{ request.user.username }}</span>
+           <span id="avatar">
+           {% if request.user.userprofiledata.avatar %}
+               {{ request.user.userprofiledata.avatar.url }}
+            {% else %}
+                /static/images/profile_placeholder.jpg
+            {% endif %}
+           </span>
+        </div>
+        <input type="text" id="messageInput" placeholder="Write a message...">
+      </form>
+	</div>
+</div>
+{% endblock %}
+
+
+{% block extrascript %}
+<script src="{% static 'js/inbox.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base/base.html" %}
+{% block title %}
+    <title>Create post</title>
+{% endblock %}
+{% block content %}
+        <div id="wrapper" style="margin: auto; max-width: 45em; padding-top: 2em;">
+
+             <form class="form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" id="id_title" maxlength="60" class="form-control" placeholder="Title goes here" autofocus name="title"/>
+                </div>
+                <div class="form-group">
+                    <textarea cols="40" id="id_content" maxlength="1000" name="content" rows="10" class="form-control" placeholder="Content goes here"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="id_image">Want to attach an image?</label>
+                    <input id="id_image" name="image" type="file" multiple/>
+                </div>
+                <button class="btn btn-lg btn-block btn-primary" type="submit">
+                    Post</button>
+                </form>
+        </div>
+{% endblock %}

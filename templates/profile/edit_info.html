@@ -1,0 +1,93 @@
+{% extends "base/base.html" %}
+{% load static custom_tags %}
+{% block title %}
+    <title>Edit info</title>
+{% endblock %}
+{% block content %}
+<style>
+    .control-label{
+        font-size: 1.3em;
+        color: #337ab7;
+    }
+</style>
+ <div id="wrapper" style="margin: auto; max-width: 50em;">
+             <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                 <h3>Edit Info:</h3>
+                 <br>
+                <div class="form-group">
+                    <label class="control-label col-xs-4" for="id_status">Status:</label>
+                    <div class="col-xs-8">
+                    <textarea id="id_status" maxlength="100" name="status" class="form-control" autofocus>{{ form.instance.status }}</textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-4" for="id_avatar">Avatar:</label>
+                    <div class="col-xs-8">
+                    <center>
+                    <h4>Current image:
+                          {% if form.instance.avatar %}
+                            <img class="picture-circle--medium" src="{{ form.instance.avatar.url }}">
+                          {% else %}
+                            <img class="picture-circle--medium" src="{% static 'images/profile_placeholder.jpg' %}">
+                          {% endif %}
+                     <input id="avatar-clear_id" name="avatar-clear" type="checkbox">
+                     <label for="avatar-clear_id">Clear</label>
+                     <br>
+                     <br>
+                     <h4>Change</h4>
+                     <input id="id_avatar" name="avatar" type="file">
+                     </h4>
+                     </center>
+                 </div>
+                </div>
+                 <br>
+                 <br>
+                 <h3>Private Information:</h3>
+                 <br>
+                 <div class="form-group">
+                    <label class="control-label col-xs-4" for="id_secondary_email">Secondary email:</label>
+                    <div class="col-xs-8">
+                    <input id="id_secondary_email" maxlength="100" {% if form.instance.secondary_email %} value="{{ form.instance.secondary_email }}" {% endif %} name="secondary_email" type="email" class="form-control">
+                    </div>
+                 </div>
+                 <div class="form-group">
+                    <label class="control-label col-xs-4" for="id_phone_number">Mobile:</label>
+                    <div class="col-xs-8">
+                    <input id="id_phone_number" min="0000000000" max="9999999999" name="phone_number" {% if form.instance.phone_number %} value="{{ form.instance.phone_number }}" {% endif %} type="number" class="form-control">
+                 </div>
+                </div>
+                 <br>
+                 <br>
+                 <h3>Social:</h3>
+                 <br>
+                 <div class="form-group">
+                    <label class="control-label col-xs-4" for="id_fb">facebook url:</label>
+                    <div class="col-xs-8">
+                    <input id="id_fb" {% if form.instance.fb %} value="{{ form.instance.fb }}" {% endif %} maxlength="1000" name="fb" type="url" class="form-control">
+                    </div>
+                 </div>
+                 <div class="form-group">
+                    <label class="control-label col-xs-4" for="id_instagram">Instagram url:</label>
+                    <div class="col-xs-8">
+                    <input id="id_instagram" {% if form.instance.instagram %} value="{{ form.instance.instagram }}" {% endif %} maxlength="1000" name="instagram" type="url" class="form-control">
+                    </div>
+                 </div>
+                 <div class="form-group">
+                    <label class="control-label col-xs-4" for="id_github">Github url:</label>
+                    <div class="col-xs-8">
+                 <input id="id_github" maxlength="1000" name="github" {% if form.instance.github %} value="{{ form.instance.github }}" {% endif %} type="url" class="form-control">
+                    </div>
+                 </div>
+                 <div class="form-group">
+                    <label class="control-label col-xs-4" for="id_website">linkedin url:</label>
+                    <div class="col-xs-8">
+                    <input id="id_website" maxlength="200" name="website" {% if form.instance.linkedin %} value="{{ form.instance.linkedin }}" {% endif %} type="url" class="form-control">
+                    </div>
+                 </div>
+                 <br>
+                <button class="btn btn-lg btn-block btn-primary" type="submit">
+                    Update</button>
+                </form>
+    </div>
+{% endblock %}

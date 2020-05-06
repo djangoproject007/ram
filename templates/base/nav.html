@@ -1,0 +1,85 @@
+{% load custom_tags %}
+<div class="navbar navbar-default navbar-fixed-top" id="main-nav">
+    <div class="container desktop" style="padding:0;">
+        <div class="navbar-header col-xs-2">
+            <a href="/" class="navbar-brand">HUSKY</a>
+        </div>
+        <div class="col-xs-offset-2 col-xs-4" style="padding-top: 10px;">
+          <form class="form" action="{% url 'basic:explore' %}">
+              <input class="form-control" name=search type="text" placeholder="Search">
+           </form>
+        </div>
+        <div id="navbar-main" class="navbar-collapse collapse col-xs-4 pull-right">
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.user.is_authenticated %}
+                    <li>
+                      <a href="{% url 'basic:index' %}">
+                        <i class="fa fa-home {% if request.resolver_match.url_name == 'index' %}active{% endif %}" aria-hidden="true"></i>
+                      </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'chat:inbox' %}">
+                            <i class="fa fa-envelope {% if request.resolver_match.url_name == 'inbox' %}active{% endif %}" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li><a href="{% url 'notifications:notifications' %}"><i class="fa fa-globe {% active 'notifications' %}" aria-hidden="true"></i></a></li>
+                    <li>
+                        <a href="{% url 'posts:create_post' %}">
+                            <i class="fa fa-pencil-square {% if request.resolver_match.url_name == 'create_post' %}active{% endif %}" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li><a href="{% url 'userprofile:see_user' request.user.username %}"><i class="fa fa-user  {% if request.resolver_match.url_name == 'see_user' %}active{% endif %}" aria-hidden="true"></i></a></li>
+                {% endif %}
+            </ul>
+        </div>
+      </div>
+      <div class="container mobile">
+        {% if request.user.is_authenticated %}
+
+          <a href="{% url 'basic:index' %}">
+            <div class="col-xs-3">
+              <i class="fa fa-home {% if request.resolver_match.url_name == 'index' %}active{% endif %}" aria-hidden="true"></i>
+            </div>
+          </a>
+            <a href="{% url 'chat:inbox' %}">
+            <div class="col-xs-3">
+                <i class="fa fa-envelope {% if request.resolver_match.url_name == 'inbox' %}active{% endif %}" aria-hidden="true"></i>
+            </div>
+            </a>
+          <a href="{% url 'notifications:notifications' %}">
+            <div class="col-xs-3">
+              <i class="fa fa-globe {% active 'notifications' %}" aria-hidden="true"></i>
+            </div>
+          </a>
+          <a href="{% url 'posts:create_post' %}">
+            <div class="col-xs-3">
+              <i class="fa fa-pencil-square {% if request.resolver_match.url_name == 'create_post' %}active{% endif %}" aria-hidden="true"></i>
+            </div>
+          </a>
+          <a href="{% url 'userprofile:see_user' request.user.username %}">
+            <div class="col-xs-3">
+              <i class="fa fa-user {% if request.resolver_match.url_name == 'see_user' %}active{% endif %}" aria-hidden="true"></i>
+            </div>
+          </a>
+        {% endif %}
+      </div>
+</div>
+
+<div class="navbar navbar-default navbar-fixed-top visible-xs" id="mobile-top-nav">
+      {% if request.resolver_match.url_name == 'edit_info' or request.resolver_match.url_name == 'followers' or request.resolver_match.url_name == 'following' or request.resolver_match.url_name == 'likes' or request.resolver_match.url_name == 'notifications' or request.resolver_match.url_name == 'edit_post' or request.resolver_match.url_name == 'see_post' or request.resolver_match.url_name == 'create_post' or request.resolver_match.url_name == 'chat' %}
+        <a class="back-button"><i class="fa fa-arrow-left active"></i></a>
+      {% elif request.resolver_match.url_name == 'inbox' %}
+        <a class="back-button"><i class="fa fa-arrow-left active"></i></a>
+        <a class="new-message" href="{% url 'chat:new_chat' %}"><i class="fa fa-plus active"></i></a>
+      {% else %}
+        <div class="navbar-header">
+            <a href="/" class="navbar-brand col-xs-2">HUSKY</a>
+              <div class="col-xs-offset-4 col-xs-6" style="padding-top: 10px;">
+              <form class="form" action="{% url 'basic:explore' %}">
+                  <input class="form-control" name=search type="text" placeholder="Search">
+               </form>
+              </div>
+        </div>
+      {% endif %}
+</div>
+
