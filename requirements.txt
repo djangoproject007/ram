@@ -13,7 +13,7 @@ incremental==16.10.1
 lxml==3.7.1
 msgpack-python==0.4.8
 pilkit==1.1.13
-Pillow==3.4.2
+Pillow==8.1.1
 redis==2.10.5
 requests==2.7.0
 six==1.10.0
